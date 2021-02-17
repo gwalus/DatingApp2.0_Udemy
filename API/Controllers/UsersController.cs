@@ -2,37 +2,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
+    [Authorize]
     public class UsersController : BaseApiController
     {
-        private readonly DataContext _context;
-        public UsersController(DataContext context)
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
-            _context = context;
+            _mapper = mapper;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
         //[Authorize]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            // var users = await _userRepository.GetUsersAsync();
 
-            return users;
+            // // na co chcemy mapować i co podajemy w konstruktorze
+            // var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
+
+            // return Ok(usersToReturn);
+
+            return Ok(await _userRepository.GetMembersAsync());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{username}")]
         // [Authorize]
-        public async Task<ActionResult<AppUser>> GetUsers(int id)
+        public async Task<ActionResult<MemberDto>> GetUsers(string username)
         {
-            var user = await _context.Users.FindAsync(id);
+            // PRZED ZMIANĄ
+            //var user = await _userRepository.GetUserByUsernameAsync(username);
 
-            return user;
+            //return Ok(_mapper.Map<MemberDto>(user));
+
+            return await _userRepository.GetMemberAsync(username);
         }
     }
 }
