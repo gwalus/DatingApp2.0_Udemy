@@ -1,0 +1,28 @@
+# fly.toml app configuration file generated for gw-dating-app on 2023-04-20T15:30:56+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "gw-dating-app"
+primary_region = "waw"
+
+[build]
+  image = "kszekosz11/datingapp:latest"
+
+[env]
+  ASPNETCORE_URLS="http://+:8080"
+  CloudinarySettings__CloudName="dnuojwurh"
+  CloudinarySettings__ApiKey="644983376199226"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+
+[checks]
+  [checks.alive]
+    type = "tcp"
+    interval = "15s"
+    timeout = "2s"
+    grace_period = "5s"
